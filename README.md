@@ -17,11 +17,12 @@ Ideally I would not need to handle payment at all. The platform would provide a 
 
 ## Tech Stack
 
-Node.js/Express (typescript)
-Postgresql w/ Slonik
-Vue frontend
+* Node.js/Express (typescript)
+* Postgresql w/ Slonik
+* Vue frontend
 
 Probably reverse proxied behind nginx
+Run it on a debian vm?
 
 ## Subscription Flow: 
 
