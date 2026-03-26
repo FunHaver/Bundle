@@ -1,2 +1,2 @@
 [] need to install Vue
-[] here the bundle admin platform will be created
+[] here the bundle admin platform UI will be created

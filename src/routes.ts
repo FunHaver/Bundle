@@ -23,6 +23,11 @@
  * post /webhook/ghost/:userid
  *    - authenticate request (userid + secret)
  *    - handle creation of users for associated publications across all supported platforms to facilitate bundle
+ */
+
+
+
+/**
  * post /webhook/beehiiv/:userid
  *    - authenticate request (tbd on what beehiiv allows for usage to auth webhooks)
  *    - handle creation of users for associated publications across all supported platforms to facilitate bundle
