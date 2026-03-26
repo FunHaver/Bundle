@@ -12,7 +12,7 @@ From an end user's perspective, they would need to do the following:
  * The experience would be a new subscriber signing up on their platform, and Bundle facilitating a new sign-up on the associated publishers' platforms automatically.
 
 ## Renumeration
-Ideally I would not need to handle payment at all. The platform would provide a way to track incoming and outgoing subscribers and provide the publishers with data they can then use to work out any renumeration or credit structure they would like, outside of the platform,
+Ideally I would not need to handle payment at all. The platform would provide a way to track incoming and outgoing subscribers and provide the publishers with data they can then use to work out any renumeration or credit structure they would like, outside of the platform.
 
 
 ## Tech Stack
