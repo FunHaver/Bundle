@@ -35,7 +35,7 @@ CREATE TABLE publisher_bundle_association (
   PRIMARY KEY (publisher_id, bundle_id)
 );
 
-CREATE TABLE subscriber_request (
+CREATE TABLE subscriber (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
   creation_date TIMESTAMP WITH TIME ZONE NOT NULL,

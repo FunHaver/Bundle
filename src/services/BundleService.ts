@@ -1,5 +1,7 @@
-import type { DatabasePool } from "slonik";
-import type { NewSubscription } from "../types/subscription.js";
+import { type DatabasePool, sql } from "slonik";
+import type { Subscription } from "../types/subscription.js";
+import type { Publisher } from "../types/publisher.js";
+import * as z from "zod";
 
 class BundleService {
   private static serviceInstance: BundleService;
@@ -19,8 +21,18 @@ class BundleService {
     return BundleService.serviceInstance;
   }
 
-  public addOutgoingSubscription(parsedSub:NewSubscription) {
-    //slonik INSERT INTO outgoing_subscribers
+  //Gets all OUTGOING publishers. Every publisher that is not the one that the subscriber used to sign up.
+  public async getAssociatedPublishersFromSubscription(sub:Subscription):Promise<Array<Publisher>> {
+    //TODO get bundle from subscriber data -> get publishers from bundle
+  }
+
+  public async addOutgoingSubscription(sub:Subscription) {
+    
+    //Refactor to insert multiple in transaction, one insert for each publisher
+    await this.pool?.query(sql.type(
+      z.object({}).strict())
+    `INSERT INTO outgoing_subscribers (subscription_request_id,outgoing_publisher_id,subscription_completed)
+    VALUES (${sub.id},${publisher.id},false)`);
   }
 
 }

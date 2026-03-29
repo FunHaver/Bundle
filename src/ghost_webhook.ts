@@ -30,7 +30,7 @@ router.post('/:publisherUUID/member', (req,res,next) => {
   const subscriptionService = SubscriptionService.getSubscriptionService();
   const parsedRequest = subscriptionService.parseGhostRequest(req.publisher,req.body.member.current);
   res.send(200);
-  subscriptionService.addNewSubscription(parsedRequest);
+  subscriptionService.addNewSubscriber(parsedRequest);
   
 });
 

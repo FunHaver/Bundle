@@ -1,6 +1,6 @@
 import { type DatabasePool,sql } from "slonik";
 import * as z from "zod";
-import { type NewSubscription, type GhostMember, GhostMemberSchema } from "../types/subscription.js";
+import { type Subscription,type SubscriptionRow, type NewSubscription, type GhostMember, GhostMemberSchema, SubscriptionRowSchema } from "../types/subscription.js";
 import type { Publisher } from "../types/publisher.js";
 import BundleService from "./BundleService.js";
 class SubscriptionService {  
@@ -31,7 +31,24 @@ class SubscriptionService {
     }
   }
 
-  public async addNewSubscription(parsedSubscriptionRequest:NewSubscription){
+  public async getSubscriberByWebhookUUID(uuid:string):Promise<Subscription>{
+    const subscriptionRow = await this.pool?.one(sql.type(SubscriptionRowSchema)
+    `SELECT * FROM subscriber WHERE webhook_unique_id = ${uuid}`);
+
+    if(!subscriptionRow){
+      throw new Error(`Subscription with webhook_unique_id: ${uuid} not found`);
+    } else {
+      return {
+	id: subscriptionRow.id,
+	email: subscriptionRow.email,
+	creationDate: subscriptionRow.creation_date,
+	origin: subscriptionRow.origin,
+	webhookUniqueId: subscriptionRow.webhook_unique_id
+      }
+    }
+  }
+
+  public async addNewSubscriber(parsedSubscriptionRequest:NewSubscription){
     //persist in database
     //outgoing subscription api service will
     //look at db for queue
@@ -40,29 +57,29 @@ class SubscriptionService {
       sql.type(z.object({
         "webhook_unique_id":z.string()
       }))
-    `SELECT webhook_unique_id FROM subscriber_request WHERE webhook_unique_id = ${parsedSubscriptionRequest.webhookUUID}`);
+    `SELECT webhook_unique_id FROM subscriber WHERE webhook_unique_id = ${parsedSubscriptionRequest.webhookUUID}`);
     if(typeof subWebhookId === "string"){
-      console.log(`Subscriber request with webhook_unique_id: ${subWebhookId} has already been submitted`);
+      console.log(`Subscriber with webhook_unique_id: ${subWebhookId} has already been submitted`);
       return 
     }
 
-    //add to subscriber_request table
+    //add to subscriber table
     await this.pool?.query(sql.type(
     z.object({}).strict())
-    `INSERT INTO subscriber_request (email,
+    `INSERT INTO subscriber (email,
               creation_date,
               origin,
               webhook_unique_id)
-              (${parsedSubscriptionRequest.email,
+       VALUES (${parsedSubscriptionRequest.email,
                 new Date().toISOString(),
                 parsedSubscriptionRequest.publisherUUID,
                 parsedSubscriptionRequest.webhookUUID})`);
-    
-    //add to outgoing_subscription table
+
+    const subscriber = await this.getSubscriberByWebhookUUID(parsedSubscriptionRequest.webhookUUID);
     const bundleService = BundleService.getBundleService();
-    bundleService.addOutgoingSubscription(parsedSubscriptionRequest)
+    bundleService.addOutgoingSubscription(subscriber);
     
-    return
+    return;
   }
 }
 

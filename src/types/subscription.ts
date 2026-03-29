@@ -14,3 +14,22 @@ export const NewSubscriptionSchema = z.object({
 })
 
 export type NewSubscription = z.infer<typeof NewSubscriptionSchema>
+
+export const SubscriptionRowSchema = z.object({
+  "id": z.number(),
+  "email": z.string().email(),
+  "subscription_request_id": z.number(),
+  "creation_date": z.coerce.date(),
+  "origin": z.number(),
+  "webhook_unique_id": z.string().uuid()
+})
+
+export type SubscriptionRow = z.infer<typeof SubscriptionRowSchema>
+
+export type Subscription = {
+  id: number,
+  email: string,
+  creationDate: Date,
+  origin: number,
+  webhookUniqueId: string
+}

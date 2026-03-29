@@ -34,16 +34,16 @@ Ghost platform
 ghost_webhook.ts
 
     |-- /:publisherUUID/member
-        |-- Authenticate request
-        |-- Parse
-        |-- Validate
-        |-- SubscriptionService.addNewSubscription()
-              |-- Dedup check
-              |-- INSERT INTO subscriber_request
-              |-- BundleService.addOutgoingSubscription()
-                    |-- Look up bundle partners for the originating publisher
-                    |-- INSERT one row into outgoing_subscription per partner
-                         (subscription_completed = false)
+    |   |-- Authenticate request
+    |   |-- Parse
+    |   |-- Validate
+    |   |-- SubscriptionService.addNewSubscription()
+    |         |-- Dedup check
+    |         |-- INSERT INTO subscriber_request
+    |         |-- BundleService.addOutgoingSubscription()
+    |               |-- Look up bundle partners for the originating  publisher
+    |               |-- INSERT one row into outgoing_subscription per partner
+    |                    (subscription_completed = false)
 
 --- request handled, response sent ---
 
