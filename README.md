@@ -1,5 +1,5 @@
 # Bundle
-A deployable bundling platform for independant publishers.
+A deployable bundling platform for independent publishers.
 
 ## Usage
 From an end user's perspective, they would need to do the following:
