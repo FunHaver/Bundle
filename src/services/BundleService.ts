@@ -1,7 +1,8 @@
 import { type DatabasePool, sql } from "slonik";
 import type { Subscription } from "../types/subscription.js";
-import type { Publisher } from "../types/publisher.js";
 import * as z from "zod";
+import PublisherService from "./PublisherService.js";
+import { BundleSchema, type Bundle } from "../types/bundle.js";
 
 class BundleService {
   private static serviceInstance: BundleService;
@@ -21,18 +22,38 @@ class BundleService {
     return BundleService.serviceInstance;
   }
 
-  //Gets all OUTGOING publishers. Every publisher that is not the one that the subscriber used to sign up.
-  public async getAssociatedPublishersFromSubscription(sub:Subscription):Promise<Array<Publisher>> {
-    //TODO get bundle from subscriber data -> get publishers from bundle
+  public async getBundleFromPublisherID(publisherId: number) {
+    const bundle = await this.pool!.one(sql.type(BundleSchema)`
+      SELECT * FROM publisher
+      INNER JOIN publisher_bundle_association pba ON publisher.id = pba.publisher_id
+      WHERE pba.publisher_id = ${publisherId}
+    `);
+    return bundle;
   }
 
-  public async addOutgoingSubscription(sub:Subscription) {
+  public async getBundleFromSubscription(subscription:Subscription):Promise<Bundle> {
+    //TODO add more granular bundle scopes
     
-    //Refactor to insert multiple in transaction, one insert for each publisher
-    await this.pool?.query(sql.type(
-      z.object({}).strict())
-    `INSERT INTO outgoing_subscribers (subscription_request_id,outgoing_publisher_id,subscription_completed)
-    VALUES (${sub.id},${publisher.id},false)`);
+    //Currently a publisher can only have one bundle.
+    return await this.getBundleFromPublisherID(subscription.originID);
+
+  }
+
+  public async addOutgoingSubscription(subscription:Subscription) {
+    //Publisher service get publishers
+    const publisherService = PublisherService.getPublisherService();
+    const bundle = await this.getBundleFromSubscription(subscription);
+    const publishers = await publisherService.getPublishersFromBundle(bundle.id);
+    const outgoingPublishers = publishers.filter(pub => pub.id !== subscription.originID);
+    
+    await this.pool!.transaction(async (connection) => {
+      for (const publisher of outgoingPublishers) {
+        await connection.query(sql.type(z.object({}).strict()) 
+          `INSERT INTO outgoing_subscribers (subscription_request_id,outgoing_publisher_id,subscription_completed)
+          VALUES (${subscription.id},${publisher.id},false)`
+        )
+      }
+    })
   }
 
 }

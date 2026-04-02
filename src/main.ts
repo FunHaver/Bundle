@@ -63,7 +63,8 @@ async function main() {
     //PARSE -> 400
     //default -> 500
     res.status(500)
-    res.render('error', { error: err })
+    console.error(err);
+    //res.json('error', { error: err })
   })
   app.listen(8000, () => {
     console.log("Listening on port 8000");

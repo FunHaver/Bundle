@@ -1,5 +1,5 @@
-import type { DatabasePool } from "slonik";
-import type { Publisher } from "../types/publisher.js";
+import { type DatabasePool, sql } from "slonik";
+import { PublisherSchema, type Publisher } from "../types/publisher.js";
 
 class PublisherService {
   private static serviceInstance: PublisherService;
@@ -19,14 +19,24 @@ class PublisherService {
     return PublisherService.serviceInstance;
   }
 
+  public async getPublishersFromBundle(bundleId: Number): Promise<Readonly<Array<Publisher>>> {
+    //TODO handle NotFoundError
+    const result = await this.pool!.many(sql.type(PublisherSchema)`
+      SELECT * FROM publisher
+      INNER JOIN publisher_bundle_association pba ON publisher.id = pba.publisher_id
+      WHERE pba.bundle_id = ${bundleId.toString()}
+    `);
 
-  public getPublisherByUUID(publisherUUID:string):Publisher {
+    return result;
+  }
+
+  public getPublisherFromUUID(publisherUUID:string):Publisher {
     //slonik db retrieval
     //return constructed publisher
     return {
-      "id":-1,
+      "id":1,
       "name": "pubName",
-      "owner": {"id": -1, "username":"test@example.com", "authenticationMethod": "BASIC"},
+      "owner": -1,
       "platform": "GHOST",
       "uuid":"some-uuid-39094s0"
     }

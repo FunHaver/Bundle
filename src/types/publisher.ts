@@ -1,5 +1,4 @@
 import * as z from "zod";
-import type { Account } from "./account.js";
 
 export const PublisherSchema = z.object({
   "id":z.number(),
@@ -9,12 +8,4 @@ export const PublisherSchema = z.object({
   "uuid": z.string()
 })
 
-export type PublisherDTO = z.infer<typeof PublisherSchema>;
-
-export type Publisher = {
-  "id": number,
-  "name": string,
-  "platform": string,
-  "owner": Account,
-  "uuid": string
-}
+export type Publisher = z.infer<typeof PublisherSchema>;

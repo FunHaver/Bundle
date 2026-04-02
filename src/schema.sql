@@ -17,7 +17,7 @@ CREATE TABLE publisher (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   platform SUPPORTED_PLATFORM NOT NULL,
-  owner INTEGER REFERENCES account(id) NOT NULL
+  owner INTEGER REFERENCES account(id) NOT NULL,
   uuid VARCHAR(255) NOT NULL
 );
 
@@ -57,7 +57,7 @@ CREATE TABLE publisher_config (
 
 CREATE TABLE outgoing_subscription (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  subscription_request_id INTEGER REFERENCES subscriber_request(id) NOT NULL,
+  subscription_request_id INTEGER REFERENCES subscriber(id) NOT NULL,
   outgoing_publisher_id INTEGER REFERENCES publisher(id) NOT NULL,
   subscription_completed BOOLEAN NOT NULL DEFAULT FALSE
 );

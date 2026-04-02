@@ -30,6 +30,6 @@ export type Subscription = {
   id: number,
   email: string,
   creationDate: Date,
-  origin: number,
-  webhookUniqueId: string
+  originID: number,
+  webhookUniqueID: string
 }

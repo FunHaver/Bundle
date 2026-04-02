@@ -14,7 +14,7 @@ router.param('publisherUUID', (req,res,next,publisherUUID) => {
   //let ghostSignatureComponents = parseGhostSignature(req.headers["x-ghost-signature"])
   //throw error if fails
   const publisherService = PublisherService.getPublisherService();
-  req.publisher = publisherService.getPublisherByUUID(publisherUUID);
+  req.publisherUUID = publisherUUID;
 
   //throw invalid user error if fails INVALID_CRED error
 
@@ -24,13 +24,15 @@ router.param('publisherUUID', (req,res,next,publisherUUID) => {
   next();
 })
 
-router.post('/:publisherUUID/member', (req,res,next) => {
+router.post('/:publisherUUID/member', async (req,res,next) => {
   //goes from incoming request -> parsed ghost subscription -> persisted subscription
 
   const subscriptionService = SubscriptionService.getSubscriptionService();
-  const parsedRequest = subscriptionService.parseGhostRequest(req.publisher,req.body.member.current);
-  res.send(200);
-  subscriptionService.addNewSubscriber(parsedRequest);
+  const parsedRequest = subscriptionService.parseGhostRequest(req.publisherUUID,req.body.member.current);
+  res.status(200);
+  res.json({message:"OK"});
+  res.send();
+  await subscriptionService.addNewSubscriber(parsedRequest);
   
 });
 
