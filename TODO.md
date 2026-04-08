@@ -1,7 +1,9 @@
 [x] create persistence layer w/Slonik
-  - Begin at startup in main w/db connection and schema validation
-  - Then do addSubscription
+  [x] Begin at startup in main w/db connection and schema validation
+  [x] Then do addSubscription
 [] attach webhook to api and let her rip
+  - implement separate node process that polls outgoing_subscription table and issues outgoing api requests
+    Try child_process.fork, if that fails, just do child_process.spawn
   - add JWT auth
 
 [] implement multitenancy

@@ -78,7 +78,7 @@ class SubscriptionService {
                 '${new Date().toISOString()}',
                 ${originalPub.id},
                 '${parsedSubscriptionRequest.webhookUUID}')`);
-    console.log("here");
+
     const subscriber = await this.getSubscriberByWebhookUUID(parsedSubscriptionRequest.webhookUUID);
     const bundleService = BundleService.getBundleService();
     bundleService.addOutgoingSubscription(subscriber);
