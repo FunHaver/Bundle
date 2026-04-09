@@ -1,7 +1,6 @@
 import { type DatabasePool,sql } from "slonik";
 import * as z from "zod";
-import { type Subscription,type SubscriptionRow, type NewSubscription, type GhostMember, GhostMemberSchema, SubscriptionRowSchema } from "../types/subscription.js";
-import type { Publisher } from "../types/publisher.js";
+import { type Subscriber,type SubscriberRow, type NewSubscriber, type GhostMember, GhostMemberSchema, SubscriberRowSchema } from "../types/subscription.js";
 import BundleService from "./BundleService.js";
 import PublisherService from "./PublisherService.js";
 class SubscriptionService {  
@@ -23,7 +22,7 @@ class SubscriptionService {
   }
 
   //publisherId is already validated during auth step prior to parsing
-  public parseGhostRequest(publisherUUID: string,requestBody:unknown):NewSubscription {
+  public parseGhostRequest(publisherUUID: string,requestBody:unknown):NewSubscriber {
     const parsed = GhostMemberSchema.parse(requestBody);
     return {
       "email":parsed.email,
@@ -32,8 +31,8 @@ class SubscriptionService {
     }
   }
 
-  public async getSubscriberByWebhookUUID(uuid:string):Promise<Subscription>{
-    const subscriptionRow = await this.pool!.one(sql.type(SubscriptionRowSchema)
+  public async getSubscriberByWebhookUUID(uuid:string):Promise<Subscriber>{
+    const subscriptionRow = await this.pool!.one(sql.type(SubscriberRowSchema)
     `SELECT * FROM subscriber WHERE webhook_unique_id = '${uuid}'`);
 
     if(!subscriptionRow){
@@ -49,7 +48,7 @@ class SubscriptionService {
     }
   }
 
-  public async addNewSubscriber(parsedSubscriptionRequest:NewSubscription){
+  public async addNewSubscriber(parsedSubscriptionRequest:NewSubscriber){
     //persist in database
     //outgoing subscription api service will
     //look at db for queue

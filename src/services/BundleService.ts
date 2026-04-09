@@ -1,5 +1,5 @@
 import { type DatabasePool, sql } from "slonik";
-import type { Subscription } from "../types/subscription.js";
+import type { Subscriber } from "../types/subscription.js";
 import * as z from "zod";
 import PublisherService from "./PublisherService.js";
 import { BundleSchema, type Bundle } from "../types/bundle.js";
@@ -31,26 +31,26 @@ class BundleService {
     return bundle;
   }
 
-  public async getBundleFromSubscription(subscription:Subscription):Promise<Bundle> {
+  public async getBundleFromSubscriber(subscriber:Subscriber):Promise<Bundle> {
     //TODO add more granular bundle scopes
     
     //Currently a publisher can only have one bundle.
-    return await this.getBundleFromPublisherID(subscription.originID);
+    return await this.getBundleFromPublisherID(subscriber.originID);
 
   }
 
-  public async addOutgoingSubscription(subscription:Subscription) {
+  public async addOutgoingSubscription(subscriber:Subscriber) {
     //Publisher service get publishers
     const publisherService = PublisherService.getPublisherService();
-    const bundle = await this.getBundleFromSubscription(subscription);
+    const bundle = await this.getBundleFromSubscriber(subscriber);
     const publishers = await publisherService.getPublishersFromBundle(bundle.id);
-    const outgoingPublishers = publishers.filter(pub => pub.id !== subscription.originID);
+    const outgoingPublishers = publishers.filter(pub => pub.id !== subscriber.originID);
     
     await this.pool!.transaction(async (connection) => {
       for (const publisher of outgoingPublishers) {
         await connection.query(sql.type(z.object({}).strict()) 
           `INSERT INTO outgoing_subscribers (subscription_request_id,outgoing_publisher_id,subscription_completed)
-          VALUES (${subscription.id},${publisher.id},false)`
+          VALUES (${subscriber.id},${publisher.id},false)`
         )
       }
     })

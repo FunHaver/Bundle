@@ -59,7 +59,8 @@ CREATE TABLE outgoing_subscription (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   subscription_request_id INTEGER REFERENCES subscriber(id) NOT NULL,
   outgoing_publisher_id INTEGER REFERENCES publisher(id) NOT NULL,
-  subscription_completed BOOLEAN NOT NULL DEFAULT FALSE
+  subscription_completed BOOLEAN NOT NULL DEFAULT FALSE,
+  retry_count INTEGER NOT NULL DEFAULT 0
 );
 
 INSERT INTO application (schema_ver) VALUES (0);
