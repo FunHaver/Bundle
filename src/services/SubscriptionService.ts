@@ -38,25 +38,21 @@ class SubscriptionService {
       id: subscriberRow.id,
       email: subscriberRow.email,
       creationDate: subscriberRow.creation_date,
-      originID: subscriberRow.id,
+      originID: subscriberRow.origin,
       webhookUniqueID: subscriberRow.webhook_unique_id
     }
   }
 
   public async getSubscriberByWebhookUUID(uuid:string):Promise<Subscriber>{
     const subscriberRow = await this.pool!.one(sql.type(SubscriberRowSchema)
-    `SELECT * FROM subscriber WHERE webhook_unique_id = '${uuid}'`);
+    `SELECT * FROM subscriber WHERE webhook_unique_id = ${uuid}`);
 
-    if(!subscriberRow){
-      throw new Error(`Subscriber with webhook_unique_id: ${uuid} not found`);
-    } else {
-      return {
-        id: subscriberRow.id,
-        email: subscriberRow.email,
-        creationDate: subscriberRow.creation_date,
-        originID: subscriberRow.origin,
-        webhookUniqueID: subscriberRow.webhook_unique_id
-      }
+    return {
+      id: subscriberRow.id,
+      email: subscriberRow.email,
+      creationDate: subscriberRow.creation_date,
+      originID: subscriberRow.origin,
+      webhookUniqueID: subscriberRow.webhook_unique_id
     }
   }
 
