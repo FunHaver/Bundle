@@ -1,23 +1,4 @@
-
-/**
- * The "handling of the creation of users to facilitate bundles" happens here. Basically, use 
- * a users' API key to create paid memberships. This file will be for programmatically creating 
- * premium members on the Ghost platform users.
- * 
- * I think I should be splitting this out into a separate service that is just a queue of new member API requests.
- * 
- * The code below is a proof of concept for communicating via api to ghost.
- */
-const readline = require('node:readline');
-require('dotenv').config();
-const baseURL = "localhost:2368";
-const adminEndpoint = "ghost/api/admin";
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-})
-
+import type { OutgoingSubscriptionRow, Subscriber } from "../types/subscription.js";
 
 /**
  * need to do this to api key to convert to token. Do it here and just pass in api key or do it outside of class?
@@ -30,8 +11,10 @@ const token:string = jwt.sign({},Buffer.from(process.env.ADMIN_SECRET!, 'hex'),
     audience: "/admin/"
   });
  */
-class GhostClient {
-  constructor (private baseURL: string, private token: string) {}
+class GhostApi {
+  constructor (private baseURL: string, private token: string) {
+    this.baseURL = "localhost:2368";
+  }
 
   async listMembers() {
     const res = await fetch(`http://${this.baseURL}/ghost/api/admin/members`, {
@@ -101,7 +84,7 @@ class GhostClient {
     }
 
     //I think member.id is required in the URL even though we're passing in an array of members
-    const res = await fetch(`http://${baseURL}/ghost/api/admin/members/${member.id}/?include=tier`, {
+    const res = await fetch(`http://${this.baseURL}/ghost/api/admin/members/${member.id}/?include=tier`, {
       "method": "PUT",
       "headers": {
         "Accept-Version": "v6.18",
@@ -114,6 +97,12 @@ class GhostClient {
       console.log(data);
     })
   }
+  async sendSub(outgoingSub:Subscriber):Promise<boolean> {
+    await this.addMember(outgoingSub.email);
+    //get status from ghost endpoint
+    //query API for confirmation that sub was made
+    //return promise from last query
+  }
 }
 
-module.exports = {GhostClient}
+export default GhostApi;

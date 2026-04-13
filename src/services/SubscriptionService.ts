@@ -31,19 +31,31 @@ class SubscriptionService {
     }
   }
 
+  public async getSubscriberByID(subID: number): Promise<Subscriber> {
+    const subscriberRow = await this.pool!.one(sql.type(SubscriberRowSchema)
+    `SELECT * FROM subscriber WHERE id = ${subID}`);
+    return {
+      id: subscriberRow.id,
+      email: subscriberRow.email,
+      creationDate: subscriberRow.creation_date,
+      originID: subscriberRow.id,
+      webhookUniqueID: subscriberRow.webhook_unique_id
+    }
+  }
+
   public async getSubscriberByWebhookUUID(uuid:string):Promise<Subscriber>{
-    const subscriptionRow = await this.pool!.one(sql.type(SubscriberRowSchema)
+    const subscriberRow = await this.pool!.one(sql.type(SubscriberRowSchema)
     `SELECT * FROM subscriber WHERE webhook_unique_id = '${uuid}'`);
 
-    if(!subscriptionRow){
-      throw new Error(`Subscription with webhook_unique_id: ${uuid} not found`);
+    if(!subscriberRow){
+      throw new Error(`Subscriber with webhook_unique_id: ${uuid} not found`);
     } else {
       return {
-        id: subscriptionRow.id,
-        email: subscriptionRow.email,
-        creationDate: subscriptionRow.creation_date,
-        originID: subscriptionRow.origin,
-        webhookUniqueID: subscriptionRow.webhook_unique_id
+        id: subscriberRow.id,
+        email: subscriberRow.email,
+        creationDate: subscriberRow.creation_date,
+        originID: subscriberRow.origin,
+        webhookUniqueID: subscriberRow.webhook_unique_id
       }
     }
   }

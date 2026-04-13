@@ -30,6 +30,11 @@ class PublisherService {
     return result;
   }
 
+  public async getPublisherFromID(pubID: number): Promise<Readonly<Publisher>> {
+    const result = await this.pool!.one(sql.type(PublisherSchema)`SELECT * FROM publisher WHERE id = ${pubID}`);
+    return result;
+  }
+
   public getPublisherFromUUID(publisherUUID:string):Publisher {
     //slonik db retrieval
     //return constructed publisher

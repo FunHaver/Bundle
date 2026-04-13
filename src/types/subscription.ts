@@ -37,7 +37,7 @@ export type Subscriber = {
 
 export const OutgoingSubscriptionRowSchema =z.object({
   "id": z.number(),
-  "subscription_request_id": z.number(),
+  "subscriber_id": z.number(),
   "outgoing_publisher_id": z.number(),
   "subscription_completed": z.boolean(),
   "retry_count": z.number()
