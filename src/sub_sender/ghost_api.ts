@@ -1,5 +1,7 @@
 import type { OutgoingSubscriptionRow, Subscriber } from "../types/subscription.js";
 
+//This is full of hardcoded mess. Need to refactor
+
 /**
  * need to do this to api key to convert to token. Do it here and just pass in api key or do it outside of class?
  * 
@@ -54,7 +56,8 @@ class GhostApi {
     })
   }
 
-  async getMemberByEmail(email:string):Promise<any> {
+  //TODO define type within array
+  async getMemberByEmail(email:string):Promise<Array<any>> {
     const res = await fetch(`http://${this.baseURL}/ghost/api/admin/members?search=${email}`, {
       "headers": {
         "Accept-Version": "v6.0",
@@ -64,7 +67,7 @@ class GhostApi {
     })
     let result:any = await res.json();
     console.log(result.members[0]);
-    return result.members[0];
+    return result.members;
   }
 
   //This is how members are comped
@@ -72,7 +75,8 @@ class GhostApi {
    /**PUT something like this:
    * {"members":[{"id":"6992970f3d2cd3305af074fd","email":"foo@example.com","tiers":[{"id":"698d571e8aff06d0de0020af","expiry_at":"2026-03-18T00:00:00.000Z"}]}]}
    */
-    let member = await this.getMemberByEmail(email);
+    let memberArr = await this.getMemberByEmail(email);
+    let member = memberArr[0];
     let body = {
       "members": [{id:member.id, email: member.email,
       "tiers": [
@@ -101,7 +105,8 @@ class GhostApi {
     await this.addMember(outgoingSub.email);
     //get status from ghost endpoint
     //query API for confirmation that sub was made
-    //return promise from last query
+    const memberArr = await this.getMemberByEmail(outgoingSub.email);
+    return memberArr.length === 1;
   }
 }
 
